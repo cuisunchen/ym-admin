@@ -333,7 +333,21 @@ export const constantRoutes = [
         ]
       }
     ]
-  }
+  },
+  {
+    path: '/issueOrder',
+    component: Layout,
+    redirect: '/issueOrder/index',
+    meta: { title: '官方发布', icon: 'documentation' },
+    children: [
+      {
+        path: 'question',
+        component: () => import('@/myPages/issueOrder/index'),
+        name: 'issueOrder',
+        meta: { title: '发布订单', icon: 'documentation' }
+      },
+    ]
+  },
 ]
 
 /**

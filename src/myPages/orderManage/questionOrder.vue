@@ -2,7 +2,7 @@
   <div class="app-container questionOrder-container">
     <el-form :inline="true" class="demo-form-inline">
       <el-form-item label="订单编号">
-        <el-input v-model="form.homeAdId" placeholder="请输入订单编号" />
+        <el-input v-model="form.homeAdOrder" placeholder="请输入订单编号" />
       </el-form-item>
       <el-form-item label="发布时间">
         <el-date-picker
@@ -33,7 +33,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="状态" class="issueStatus">
-        <el-select v-model="form.status" placeholder="请选择">
+        <el-select v-model="status" placeholder="请选择">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -64,8 +64,7 @@
       highlight-current-row
       style="width: 100%"
       class="elTable"
-      @selection-change="handleSelectionChange"
-    >
+      @selection-change="handleSelectionChange">
       <el-table-column
         type="selection"
         width="39"
@@ -82,17 +81,10 @@
       </el-table-column>
       <el-table-column align="center" prop="userAccount" label="用户账号" width="110" />
 
-      <el-table-column
-        align="center"
-        label="内容链接"
-        width="110"
-      >
+      <el-table-column align="center" label="内容链接" width="110">
         <template slot-scope="scope">
-          <a
-            :href="scope.row.homeBigImgUrl"
-            target="_blank"
-            style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;"
-          >
+          <a :href="scope.row.homeBigImgUrl" target="_blank"
+            style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
             {{ scope.row.homeBigImgUrl }}
           </a>
         </template>
@@ -146,17 +138,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="来源" width="120">yes
+      <el-table-column align="center" label="来源" width="60">yes
       </el-table-column>
 
       <el-table-column align="center" prop="status" label="状态" width="80" />
 
-      <el-table-column align="center" label="操作" width="290px">
+      <el-table-column align="center" label="操作" width="220px">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="showDialog(scope.row)">详情</el-button>
-          <el-button type="success" size="mini" @click="orderPass(scope.row)">通过</el-button>
-          <el-button type="warning" size="mini" @click="noPass(scope.row)">驳回</el-button>
-          <el-button type="danger" size="mini" @click="orderDown(scope.row)">下架</el-button>
+          <el-button type="success" size="mini" v-if="form.status != 1" @click="orderPass(scope.row)">通过</el-button>
+          <el-button type="warning" size="mini" v-if="form.status != 2" @click="noPass(scope.row)">驳回</el-button>
+          <el-button type="danger" size="mini" v-if="form.status != 5" @click="orderDown(scope.row)">下架</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -180,6 +172,7 @@
 
 <script type="text/ecmascript-6">
 import questionOrderDetail from './details/questionOrderDetail'
+import { statusOpt, comeFrom, rangTypes } from '../../utils/options'
 import request from '@/utils/request'
 export default {
   components: {
@@ -189,6 +182,7 @@ export default {
     return {
       form: {
         homeAdId: '',
+        homeAdOrder:'',
         releaseTime: '',
         rangeType: 0,
         status: 0,
@@ -196,54 +190,11 @@ export default {
         pageSize: 20,
         comeFrom: 1
       },
+      status: 0,
       listLoading: false,
-      options: [{
-        value: 2,
-        label: '已驳回'
-      }, {
-        value: 3,
-        label: '待支付'
-      }, {
-        value: 0,
-        label: '待审核'
-      }, {
-        value: 1,
-        label: '待发布'
-      }, {
-        value: 4,
-        label: '发布中'
-      }, {
-        value: 6,
-        label: '已完成'
-      }
-      ],
-      comeFrom: [
-        {
-          value: 1,
-          label: '全部'
-        }, {
-          value: 2,
-          label: '是'
-        }, {
-          value: 3,
-          label: '否'
-        }
-      ],
-      rangTypes: [
-        {
-          value: 0,
-          label: '全部'
-        }, {
-          value: 1,
-          label: '全国'
-        }, {
-          value: 2,
-          label: '同城'
-        }, {
-          value: 3,
-          label: '附近'
-        }
-      ],
+      options: [],
+      comeFrom: [],
+      rangTypes: [],
       tabSelect: false,
       tableData: [],
       totalNums: null,
@@ -255,6 +206,10 @@ export default {
     }
   },
   created() {
+    this.options = statusOpt
+    this.comeFrom = comeFrom
+    this.rangTypes = rangTypes
+    this.form.status = this.status
     this.getDatas()
   },
   methods: {
@@ -393,6 +348,7 @@ export default {
     },
     getDatas() {
       this.listLoading = true
+      this.form.status = this.status
       request({
         url: '/api/find/findQAList',
         method: 'post',

@@ -1,16 +1,22 @@
 import axios from 'axios'
+import store from '@/store'
 
 axios.defaults.timeout = 10000
 // axios.defaults.baseURL = 'http://47.92.173.239:11001/api'; //填写域名
-axios.defaults.baseURL = 'http://www.uningx.com:8080' // 填写域名
+// axios.defaults.baseURL = 'https://test.guangyi009.com/' // 填写域名
 
 // http request 拦截器
 axios.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers['Authorization'] = 'Bearer ' + token
+    
+    if (store.getters.token) {
+      // let each request carry token
+      // ['X-Token'] is a custom headers key
+      // please modify it according to the actual situation
+      // config.headers['X-Token'] = getToken()
+      config.headers.common['Authorization'] = 'Bearer ' + store.getters.token
     }
+    
     return config
   },
   error => {

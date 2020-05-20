@@ -18,6 +18,12 @@ import './permission' // permission control
 import './utils/error-log' // error log
 import Viewer from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
+import { get, post } from './utils/http-server'
+import { setStorage, getStorage } from './utils/utils'
+Vue.prototype.$setStorage = setStorage
+Vue.prototype.$getStorage = getStorage
+Vue.prototype.$get = get
+Vue.prototype.$post = post
 
 Vue.use(Viewer, {
   defaultOptions: {
@@ -42,10 +48,10 @@ Vue.prototype.$imgUpload = imgUpload
  * Currently MockJs will be used in the production environment,
  * please remove it before going online ! ! !
  */
-if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
-  mockXHR()
-}
+// if (process.env.NODE_ENV === 'production') {
+//   const { mockXHR } = require('../mock')
+//   mockXHR()
+// }
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
@@ -56,7 +62,7 @@ Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
 
-console.log(process.env.VUE_APP_BASE_API)
+console.log(process.env)
 
 Vue.config.productionTip = false
 

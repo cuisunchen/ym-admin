@@ -54,6 +54,7 @@ const actions = {
         if (!data) {
           reject('Verification failed, please Login again.')
         }
+        // debugger
         data.roles = data.account.split(',')
         data.nickName = data.nickName.toLowerCase()
         // data.avatarUrl = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1585989389160&di=e9a40be14b631d3398a223363fc4fe3f&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20170709%2Fece2ab17bcab4343b29512f7e6d0b88f.png'

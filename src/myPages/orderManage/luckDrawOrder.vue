@@ -33,7 +33,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="状态" class="issueStatus">
-        <el-select v-model="form.status" placeholder="请选择">
+        <el-select v-model="status" placeholder="请选择">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -56,47 +56,26 @@
         <el-button type="danger" size="mini" @click="orderDown">下架</el-button>
       </div>
     </div>
-    <el-table
-      v-loading="listLoading"
-      :data="tableData"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-      class="elTable"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column
-        type="selection"
-        width="39"
-      />
-      <el-table-column
-        align="center"
-        prop="orderNumber"
-        label="订单编号"
-        width="110"
-      >
+    <el-table v-loading="listLoading" :data="tableData" border fit  style="width: 100%" class="elTable"
+      highlight-current-row @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="39" />
+      <el-table-column align="center" prop="orderNumber" label="订单编号" width="110">
         <template slot-scope="scope">
           <p style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{ scope.row.orderNumber }}</p>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="userAccount" label="用户账号" width="110" />
 
-      <el-table-column
-        align="center"
-        label="内容链接"
-        width="110"
-      >
+      <el-table-column align="center" label="内容链接" width="110">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.homeBigImgUrl" placement="top-end">
-            <p style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{ scope.row.homeBigImgUrl }}</p>
-          </el-tooltip>
+          <a :href="scope.row.homeBigImgUrl" target="_blank"
+            style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
+            {{ scope.row.homeBigImgUrl }}
+          </a>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        label="标题"
-      >
+
+      <el-table-column align="center" label="标题">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.title" placement="top-start">
             <p style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{ scope.row.title }}</p>
@@ -104,18 +83,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        prop="rangeType"
-        label="发布范围"
-        width="90"
-      />
+      <el-table-column align="center" prop="rangeType" label="发布范围" width="90"/>
 
-      <el-table-column
-        align="center"
-        label="发布条数"
-        width="90"
-      >
+      <el-table-column align="center" label="发布条数" width="90">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="String(scope.row.totalNums)" placement="top-end">
             <p style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{ scope.row.totalNums }}</p>
@@ -123,11 +93,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        label="发布金额"
-        width="90"
-      >
+      <el-table-column align="center" label="发布金额" width="90">
         <template slot-scope="scope">
           <router-link class="link" :to="{path:'/accountManage/business',query:{id: scope.row.id}}">
             <el-tooltip class="item" effect="dark" :content="scope.row.profit" placement="top-end">
@@ -143,8 +109,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="来源" width="120">yes
-      </el-table-column>
+      <el-table-column align="center" label="来源" width="60">yes</el-table-column>
 
       <el-table-column align="center" prop="status" label="状态" width="80">
         <template slot-scope="scope">
@@ -155,16 +120,12 @@
           <span v-if="scope.row.status == 4">被举报</span>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        label="操作"
-        width="290px"
-      >
+      <el-table-column align="center" label="操作" width="220px" >
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="showDialog(scope.row)">详情</el-button>
-          <el-button type="success" size="mini" @click="orderPass(scope.row)">通过</el-button>
-          <el-button type="warning" size="mini" @click="noPass(scope.row)">驳回</el-button>
-          <el-button type="danger" size="mini" @click="orderDown(scope.row)">下架</el-button>
+          <el-button type="success" size="mini" v-if="form.status != 1" @click="orderPass(scope.row)">通过</el-button>
+          <el-button type="warning" size="mini" v-if="form.status != 2" @click="noPass(scope.row)">驳回</el-button>
+          <el-button type="danger" size="mini" v-if="form.status != 5" @click="orderDown(scope.row)">下架</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -188,6 +149,7 @@
 
 <script type="text/ecmascript-6">
 import luckDrawOrderDetail from './details/luckDrawOrderDetail'
+import { statusOpt, comeFrom, rangTypes } from '../../utils/options'
 import request from '@/utils/request'
 export default {
   components: {
@@ -205,54 +167,11 @@ export default {
         pageSize: 20,
         comeFrom: 1
       },
-      options: [{
-        value: 2,
-        label: '已驳回'
-      }, {
-        value: 3,
-        label: '待支付'
-      }, {
-        value: 0,
-        label: '待审核'
-      }, {
-        value: 1,
-        label: '待发布'
-      }, {
-        value: 4,
-        label: '发布中'
-      }, {
-        value: 6,
-        label: '已完成'
-      }
-      ],
-      comeFrom: [
-        {
-          value: 1,
-          label: '全部'
-        }, {
-          value: 2,
-          label: '是'
-        }, {
-          value: 3,
-          label: '否'
-        }
-      ],
+      status: 0,
+      options: [],
+      comeFrom: [],
       issueValue: '',
-      rangTypes: [
-        {
-          value: 0,
-          label: '全部'
-        }, {
-          value: 1,
-          label: '全国'
-        }, {
-          value: 2,
-          label: '同城'
-        }, {
-          value: 3,
-          label: '附近'
-        }
-      ],
+      rangTypes: [],
       tableData: [],
       dialogFormVisible: false,
       formLabelWidth: '120px',
@@ -263,6 +182,10 @@ export default {
     }
   },
   created() {
+    this.options = statusOpt
+    this.comeFrom = comeFrom
+    this.rangTypes = rangTypes
+    this.form.status = this.status
     this.getDatas()
   },
   methods: {
@@ -395,6 +318,8 @@ export default {
     },
     getDatas() {
       this.listLoading = true
+      this.form.status = this.status
+      // debugger
       request({
         url: '/api/find/findGLList',
         method: 'post',

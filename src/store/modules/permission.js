@@ -56,7 +56,6 @@ const actions = {
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
         accessedRoutes = filterAsyncRoutes(myRouter, roles)
       }
-      debugger
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })

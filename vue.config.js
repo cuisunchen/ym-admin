@@ -40,7 +40,7 @@ module.exports = {
     proxy: {
       '/api': {
         // target: 'http://47b4a648.ngrok.io',
-        target: 'http://www.uningx.com:8666',
+        target: 'https://test.guangyi009.com/',
         changeOrigin: true,//允许跨域
         ws: true,
         pathRewrite: {
@@ -49,7 +49,7 @@ module.exports = {
       },
       '/image': {
         // target: 'http://47b4a648.ngrok.io',
-        target: 'http://www.uningx.com:8666',
+        target: 'https://test.guangyi009.com/',
         changeOrigin: true,//允许跨域
         ws: true,
         pathRewrite: {
