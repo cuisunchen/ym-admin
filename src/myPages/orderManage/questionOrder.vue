@@ -138,12 +138,26 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="来源" width="60">yes
+      <el-table-column align="center" label="状态" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.releasesSource == 1 ? '官方' : '用户' }}</span>
+        </template>
       </el-table-column>
 
-      <el-table-column align="center" prop="status" label="状态" width="80" />
+      <el-table-column align="center" label="状态" width="80">
+        <template slot-scope="scope">
+          <span v-if="scope.row.status == 0">待审核</span>
+          <span v-if="scope.row.status == 1">发布中</span>
+          <span v-if="scope.row.status == 2">已驳回</span>
+          <span v-if="scope.row.status == 3">已完成</span>
+          <span v-if="scope.row.status == 4">已下架</span>
+          <span v-if="scope.row.status == 5">已过期</span>
+          <span v-if="scope.row.status == 6">待发布</span>
+          <span v-if="scope.row.status == 7">待支付</span>
+        </template>
+      </el-table-column>
 
-      <el-table-column align="center" label="操作" width="220px">
+      <el-table-column align="center" label="操作" width="220px" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="showDialog(scope.row)">详情</el-button>
           <el-button type="success" size="mini" v-if="form.status != 1" @click="orderPass(scope.row)">通过</el-button>
@@ -210,6 +224,15 @@ export default {
     this.comeFrom = comeFrom
     this.rangTypes = rangTypes
     this.form.status = this.status
+    //  /api/getOptions
+    request({
+        url: '/api/getOptions',
+        method: 'get'
+      }).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+        }
+      })
     this.getDatas()
   },
   methods: {

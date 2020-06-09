@@ -4,22 +4,25 @@ export const statusOpt = [
       label: '待审核'
    }, {
       value: 1,
-      label: '待发布'
+      label: '发布中'
    }, {
       value: 2,
       label: '已驳回'
    }, {
       value: 3,
-      label: '待支付'
+      label: '已完成'
    }, {
       value: 4,
-      label: '发布中'
-   }, {
-      value: 5,
       label: '已下架'
    }, {
+      value: 5,
+      label: '已过期'
+   }, {
       value: 6,
-      label: '已完成'
+      label: '待发布'
+   }, {
+      value: 7,
+      label: '待支付'
    }
 ]
 

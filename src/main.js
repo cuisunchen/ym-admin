@@ -18,12 +18,14 @@ import './permission' // permission control
 import './utils/error-log' // error log
 import Viewer from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
-import { get, post } from './utils/http-server'
+import request from '@/utils/request'
+// import { get, post } from './utils/http-server'
 import { setStorage, getStorage } from './utils/utils'
 Vue.prototype.$setStorage = setStorage
 Vue.prototype.$getStorage = getStorage
-Vue.prototype.$get = get
-Vue.prototype.$post = post
+// Vue.prototype.$get = get
+// Vue.prototype.$post = post
+Vue.prototype.$ajax = request
 
 Vue.use(Viewer, {
   defaultOptions: {

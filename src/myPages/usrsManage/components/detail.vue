@@ -2,66 +2,68 @@
   <div class="dialog-container">
     <div class="flex">
       <TextLayout :label-width="70" class="flex1" label="用户id">
-        {{ obj.sex }}
+        {{ obj.id }}
       </TextLayout>
-      <TextLayout :label-width="70" class="flex1" label="微信号">
-        222
+      <TextLayout :label-width="70" class="flex1" label="微信昵称">
+        {{obj.wechat || '--'}}
       </TextLayout>
     </div>
     <div class="flex">
       <TextLayout :label-width="70" class="flex1" label="手机号">
-        {{ obj.sex }}
+        {{ obj.mobile }}
       </TextLayout>
       <TextLayout :label-width="70" class="flex1" label="等级">
-        222
+        {{obj.level}}
       </TextLayout>
     </div>
     <div class="flex">
       <TextLayout :label-width="70" class="flex1" label="好友总数">
-        {{ obj.sex }}
+        {{ obj.friends }}
       </TextLayout>
       <TextLayout :label-width="70" class="flex1" label="今日收益">
-        222
+        {{ obj.todayEarn }}
       </TextLayout>
     </div>
     <div class="flex">
       <TextLayout :label-width="70" class="flex1" label="全部收益">
-        {{ obj.sex }}
+        {{ obj.totalEarn }}
       </TextLayout>
       <TextLayout :label-width="70" class="flex1" label="已提现总额">
-        222
+        {{ obj.widthdrawal }}
       </TextLayout>
     </div>
     <div class="flex">
       <TextLayout :label-width="70" class="flex1" label="剩余金额">
-        {{ obj.sex }}
+        {{ obj.surplus }}
       </TextLayout>
       <TextLayout :label-width="70" class="flex1" label="提现总数">
-        222
+        {{ obj.widthdrawalNum }}
       </TextLayout>
     </div>
     <div class="flex">
       <TextLayout :label-width="70" class="flex1" label="消息总数">
-        {{ obj.sex }}
+        {{ obj.msgNum }}
       </TextLayout>
       <TextLayout :label-width="70" class="flex1" label="问题总数">
-        222
+        {{ obj.qsNum }}
       </TextLayout>
     </div>
     <div class="flex">
       <TextLayout :label-width="70" class="flex1" label="申诉总数">
-        {{ obj.sex }}
+        {{ obj.appealNum }}
       </TextLayout>
       <TextLayout :label-width="70" class="flex1" label="首次登录">
-        222
+        {{ obj.time || '--' }}
       </TextLayout>
     </div>
     <div class="flex">
       <TextLayout :label-width="70" class="flex1" label="账号状态">
-        {{ obj.sex }}
+        {{ obj.status ? '封号中' : '正常' }}
       </TextLayout>
       <TextLayout :label-width="70" class="flex1" label="用户头像">
-        222
+        <viewer>
+          <img style="width:30px;height: 30px" width="300" :src="obj.avator" alt="" srcset="">
+        </viewer>
       </TextLayout>
     </div>
   </div>
@@ -78,6 +80,7 @@ export default {
       type: Object
     }
   },
+  
   data() {
     return {
 

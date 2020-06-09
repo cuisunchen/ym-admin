@@ -18,60 +18,6 @@
         </el-col>
         <el-button type="primary" @click="confirm">确定</el-button>
       </el-form-item>
-
-      <el-form-item label="小程序分享图片">
-        <el-col :span="6">
-          <el-upload
-            class="avatar-uploader"
-            action=""
-            :http-request="imgUploadSuccess"
-            :show-file-list="false"
-            :before-upload="beforeImgUpload">
-            <el-button v-if="imgLoading" circle :loading="imgLoading" />
-            <div v-else>
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </div>
-          </el-upload>
-        </el-col>
-        <el-button type="primary" @click="confirm">确定</el-button>
-      </el-form-item>
-
-      <el-form-item label="发布指引图片">
-        <el-col :span="6">
-          <el-upload
-            class="avatar-uploader"
-            action=""
-            :http-request="imgUploadSuccess"
-            :show-file-list="false"
-            :before-upload="beforeImgUpload">
-            <el-button v-if="imgLoading" circle :loading="imgLoading" />
-            <div v-else>
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </div>
-          </el-upload>
-        </el-col>
-        <el-button type="primary" @click="confirm">确定</el-button>
-      </el-form-item>
-
-      <el-form-item label="抽奖图片">
-        <el-col :span="6">
-          <el-upload
-            class="avatar-uploader"
-            action=""
-            :http-request="imgUploadSuccess"
-            :show-file-list="false"
-            :before-upload="beforeImgUpload">
-            <el-button v-if="imgLoading" circle :loading="imgLoading" />
-            <div v-else>
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </div>
-          </el-upload>
-        </el-col>
-        <el-button type="primary" @click="confirm">确定</el-button>
-      </el-form-item>
     </el-form>
   </div>
 </template>

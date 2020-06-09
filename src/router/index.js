@@ -286,6 +286,12 @@ export const constantRoutes = [
             component: () => import('@/myPages/configManage/system/others'),
             name: 'others',
             meta: { title: '其他配置' }
+          },
+          {
+            path: 'loginConf',
+            component: () => import('@/myPages/configManage/system/loginConfig'),
+            name: 'loginConf',
+            meta: { title: '登录方式配置' }
           }
         ]
       },
