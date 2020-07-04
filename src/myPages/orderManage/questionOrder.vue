@@ -65,16 +65,9 @@
       style="width: 100%"
       class="elTable"
       @selection-change="handleSelectionChange">
-      <el-table-column
-        type="selection"
-        width="39"
-      />
-      <el-table-column
-        align="center"
-        prop="orderNumber"
-        label="订单编号"
-        width="170"
-      >
+      <el-table-column type="selection" width="39" />
+
+      <el-table-column align="center" prop="orderNumber" label="订单编号" width="170">
         <template slot-scope="scope">
           <p style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{ scope.row.orderNumber }}</p>
         </template>
@@ -90,10 +83,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        label="标题"
-      >
+      <el-table-column align="center" label="标题">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.title" placement="top-start">
             <p style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{ scope.row.title }}</p>
@@ -101,28 +91,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        prop="rangeType"
-        label="发布范围"
-        width="90"
-      />
+      <el-table-column align="center" prop="rangeType" label="发布范围" width="90"/>
 
-      <el-table-column
-        align="center"
-        label="发布条数"
-        width="90"
-      >
+      <el-table-column align="center" label="发布条数" width="90" >
         <template slot-scope="scope">
           <p style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{ scope.row.totalNums }}</p>
         </template>
       </el-table-column>
       <!-- 点击跳转到账单管理的页面 -->
-      <el-table-column
-        align="center"
-        label="发布金额"
-        width="90"
-      >
+      <el-table-column align="center" label="发布金额" width="90">
         <template slot-scope="scope">
           <router-link class="link" :to="{path:'/accountManage/business',query:{id: scope.row.id}}">
             <el-tooltip class="item" effect="dark" :content="scope.row.profit" placement="top-end">
@@ -224,15 +201,6 @@ export default {
     this.comeFrom = comeFrom
     this.rangTypes = rangTypes
     this.form.status = this.status
-    //  /api/getOptions
-    request({
-        url: '/api/getOptions',
-        method: 'get'
-      }).then(res => {
-        console.log(res)
-        if (res.code == 200) {
-        }
-      })
     this.getDatas()
   },
   methods: {

@@ -64,8 +64,6 @@ Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
 
-console.log(process.env)
-
 Vue.config.productionTip = false
 
 new Vue({

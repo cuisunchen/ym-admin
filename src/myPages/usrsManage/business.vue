@@ -10,7 +10,7 @@
     </el-form>
 
     <el-table v-loading="listLoading" :data="tableData" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" type="index" width="30"/>
+      <el-table-column align="center" type="index" width="40"/>
 
       <!-- <el-table-column align="center" prop="id" label="用户id" width="100"/> -->
 
@@ -63,19 +63,13 @@
           {{ scope.row.time || '--' }}
         </template>
       </el-table-column>
-
-      <!-- <el-table-column align="center" label="状态" width="80">
-        <template slot-scope="scope">
-          <el-switch v-model="scope.row.status"  active-color="#ff4949"/>
-        </template>
-      </el-table-column> -->
     </el-table>
 
     <el-pagination
       background
       :current-page="tableFoot.currentPage"
       :page-sizes="[10, 20, 30, 40]"
-      :page-size="10"
+      :page-size="param.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="tableFoot.total"
       @size-change="handleSizeChange"
@@ -96,7 +90,7 @@ export default {
       },
       param:{
         "pageNum": 1,
-        "pageSize": 2,
+        "pageSize": 10,
         "phone": ''
       }
     }
@@ -118,21 +112,24 @@ export default {
             item.status = !item.status
             return item
           })
-          this.tableFoot.total = res.data.sumPage
+          this.tableFoot.total = res.data.totalNums
         }
       })
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      this.param.pageSize = val
+      this.getLists()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      this.param.pageNum = val
+      this.getLists()
     },
     search() {
-      console.log('search')
-    },
-    handleClick() {
-      console.log('button click')
+      if(this.param.phone){
+        this.param.pageNum = 1
+        this.param.pageSize = 10
+      }
+      this.getLists()
     }
   }
 }

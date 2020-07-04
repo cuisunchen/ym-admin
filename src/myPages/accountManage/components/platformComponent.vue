@@ -6,9 +6,9 @@
         <el-input v-model.trim="money" placeholder="请输入要修改的金额" />
       </el-form-item>
       <el-form-item label="修改存取类型">
-        <el-select v-model="value" size="mini" placeholder="请选择" style="width: 168px;margin-right: 10px">
+        <el-select v-model="handleVal" size="mini" placeholder="请选择" style="width: 168px;margin-right: 10px">
           <el-option
-            v-for="item in options"
+            v-for="item in handleOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -107,13 +107,23 @@ export default {
   data() {
     return {
       money: '',
+      handleOptions:[
+        {
+          value: '1',
+          label: '存'
+        }, {
+          value: '2',
+          label: '取'
+        }
+      ],
+      handleVal:'',
       options: [
         {
           value: '1',
           label: '全部'
         }, {
           value: '2',
-          label: '取'
+          label: '存'
         }, {
           value: '3',
           label: '取'
@@ -143,7 +153,17 @@ export default {
   },
   methods: {
     submit() {
-
+      this.$confirm('确认提交？')
+          .then(res => {
+            console.log(res)
+            if(res == 'confirm'){
+              //  调用接口
+            }
+            done();
+          })
+          .catch(res => {
+            console.log(res == 'confirm')
+          });
     },
     search() {
 

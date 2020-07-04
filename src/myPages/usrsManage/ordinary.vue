@@ -15,7 +15,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="getLists">查询</el-button>
+        <el-button type="primary" @click="search">查询</el-button>
       </el-form-item>
     </el-form>
 
@@ -31,31 +31,29 @@
 
       <el-table-column align="center" width="110" prop="mobile" label="手机号" />
 
-      <el-table-column align="center" label="好友总数" >
+      <el-table-column align="center" label="好友总数" width="90">
         <template slot-scope="scope">
           <div style="cursor: pointer" @click="showDialog('friends','好友列表',scope.row)">{{ scope.row.friends }}</div>
         </template>
       </el-table-column>
       <!-- 点击显示弹窗   显示各种收益明细 问答收益多少  好运收益多少  好友分成多少 -->
-      <el-table-column align="center" label="今日收益" >
+      <el-table-column align="center" label="今日收益" width="110">
         <template slot-scope="scope">
           <div style="cursor: pointer" @click="showDialog('income','今日收益',scope.row)">{{ scope.row.todayEarn }}</div>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" prop="totalEarn" label="全部收益"/>
+      <el-table-column align="center" prop="totalEarn" label="全部收益" width="110"/>
 
-      <el-table-column align="center" label="剩余金额" >
-        <template slot-scope="scope">
-          <router-link class="link" :to="{path:'/accountManage/ordinary',query:{id: scope.row.id}}">
-            {{ scope.row.surplus }}
-          </router-link>
-        </template>
+      <el-table-column align="center" prop="surplus" label="剩余金额" width="110" >
       </el-table-column>
       <!-- 点击弹出弹窗显示提现记录列表 -->
       <el-table-column align="center" label="提现总数" width="80">
         <template slot-scope="scope">
-          <div class="" style="cursor: pointer" @click="showDialog('withdrawal','提现记录列表',scope.row)">{{ scope.row.widthdrawalNum }}</div>
+          <router-link class="link" :to="{name:'accountOrdinary',params:{mobile: scope.row.mobile}}">
+            {{ scope.row.widthdrawalNum }}
+          </router-link>
+          <!-- <div class="" style="cursor: pointer" @click="showDialog('withdrawal','提现记录列表',scope.row)">{{ scope.row.widthdrawalNum }}</div> -->
         </template>
       </el-table-column>
 
@@ -81,8 +79,8 @@
     <el-pagination
       background
       :current-page="tableFoot.currentPage"
-      :page-sizes="[10, 20, 30, 40]"
-      :page-size="10"
+      :page-sizes="[2, 20, 30, 40]"
+      :page-size="param.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="tableFoot.total"
       @size-change="handleSizeChange"
@@ -91,8 +89,35 @@
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <friendList v-if="type == 'friends'" :user-id="currentData.id" />
       <incomeDetail v-if="type == 'income'" />
-      <withdrawal v-if="type == 'withdrawal'" />
+      <withdrawal v-if="type == 'withdrawal'" :phone="currentData.mobile"/>
       <detail v-if="type == 'detail'" :obj="currentData" />
+    </el-dialog>
+
+    <el-dialog title="原因"
+      :visible.sync="reasonShow"
+      width="30%" :before-close="handleClose">
+      <el-row :gutter="20" class="flex align-center">
+        <el-col :span="16">
+          <el-input v-model="blockReason" placeholder="请输入封号理由"></el-input>
+        </el-col>
+        <el-col :span="8">
+          <el-dropdown trigger="click">
+            <span class="el-dropdown-link">
+              请选择<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+             <!-- @command="dropItemClick" -->
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-for="(item,index) in dropList" :key="index">
+                  <div @click="dropItemClick(item)">{{item}}</div>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="reasonShow = false">取 消</el-button>
+        <el-button type="primary" @click="blockAccount">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -110,9 +135,12 @@ export default {
     return {
       listLoading: false,
       tableData: [],
-      currentPage: 1,
       type: '',
       dialogFormVisible: false,
+      reasonShow: false,
+      dropList:['系统升级,请稍后再试','您的账号存在违规操作,已被封号,请联系客服'],
+      blockReason:'',
+      blockAccountId:'',
       dialogTitle: '',
       currentData: {},
       statusOpt:[
@@ -126,7 +154,7 @@ export default {
       },
       param:{
         "pageNum": 1,
-        "pageSize": 4,
+        "pageSize": 10,
         "phone": '',
         'status': null
       }
@@ -137,6 +165,13 @@ export default {
     this.getLists()
   },
   methods: {
+    search(){
+      if(this.param.phone || this.param.status > -1){
+        this.param.pageNum = 1
+        this.param.pageSize = 10
+      }
+      this.getLists()
+    },
     getLists(){
       this.$ajax({
         url:'/api/user/userList',
@@ -149,15 +184,15 @@ export default {
             item.status = !item.status
             return item
           })
-          this.tableFoot.total = res.data.sumPage
+          this.tableFoot.total = res.data.totalNums
         }
       })
     },
-    search() {
-      console.log('search')
+    handleClose(){},
+    dropItemClick(data){
+      this.blockReason = data
     },
     showDialog(type, title, row) {
-      console.log(type)
       this.type = type
       if (type == 'detail') {
         // this.currentData = row
@@ -168,27 +203,36 @@ export default {
       this.dialogFormVisible = true
     },
     switchChange(row){
-      this.$ajax({
-        url:'/api/user/updateUserStatus',
-        method: 'post',
-        data: {id: row.id}.then(res=>{
-          console.log(res)
-        })
-      })
+      this.blockAccountId = row.id
+      if(row.status){
+        this.reasonShow = true
+      }else{
+        this.blockAccount()
+      }
     },
-    handleClick() {
-      console.log('button click')
+    blockAccount(){
+      this.$ajax({
+          url:'/api/user/updateUserStatus',
+          method: 'post',
+          data: {id: this.blockAccountId}
+        }).then(res=>{
+          if(res.code == 200){
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
+            });
+            this.getLists()
+          }
+        })
     },
     handleSizeChange(val) {
       this.param.pageSize = val
       this.getLists()
-      console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
       this.param.pageNum = val
       this.tableFoot.currentPage = val
       this.getLists()
-      console.log(`当前页: ${val}`)
     }
   }
 }
@@ -199,5 +243,9 @@ export default {
    /deep/ .el-dialog{
       height: auto;
    }
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
+  }
 }
 </style>

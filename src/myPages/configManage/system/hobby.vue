@@ -66,18 +66,7 @@ export default {
           { validator: checkTabName, trigger: 'blur' }
         ]
       },
-      tags: [
-        {
-          id: '121313',
-          imgUrl: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3043394513,1123403899&fm=26&gp=0.jpg',
-          name: '服装'
-        },
-        {
-          id: '121313',
-          imgUrl: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3043394513,1123403899&fm=26&gp=0.jpg',
-          name: '游戏'
-        }
-      ],
+      tags: [],
       form: {
         imgUrl: '',
         tabName: ''
@@ -122,7 +111,6 @@ export default {
     addTag() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          console.log('submit!!')
           this.submitLoading = true
           request({
             url: '/api/addInterest',
@@ -133,8 +121,6 @@ export default {
               this.getHobbys()
             }
           })
-
-          console.log(this.tags)
           this.form = {
             brand: '',
             name: ''
@@ -160,7 +146,17 @@ export default {
       })
     },
     deleteTag(item) {
-      alert('删除兴趣')
+      request({
+        url: '/api/delInterest',
+        method: 'post',
+        data:{
+          id: item.id
+        }
+      }).then(res => {
+        if (res.code == 200) {
+          this.getHobbys()
+        }
+      })
     }
   }
 }

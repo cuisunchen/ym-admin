@@ -1,36 +1,15 @@
 <template>
   <div class="withdrawal">
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-    >
-      <el-table-column
-        align="center"
-        type="index"
-        width="30"
-      />
+    <el-table v-loading="listLoading" :data="list"
+      border fit highlight-current-row style="width: 100%" >
 
-      <el-table-column
-        align="center"
-        prop="withdrawalQuota"
-        label="提现额度"
-      />
+      <el-table-column align="center" type="index" width="30" />
 
-      <el-table-column
-        align="center"
-        prop="withdrawaTime"
-        label="提现时间"
-      />
+      <el-table-column align="center" prop="withdrawalQuota" label="提现额度" />
 
-      <el-table-column
-        align="center"
-        prop="withdrawaType"
-        label="提现方式"
-      />
+      <el-table-column align="center" prop="withdrawaTime" label="提现时间"/>
+
+      <el-table-column align="center" prop="withdrawaType" label="提现方式"/>
     </el-table>
     <el-pagination
       background
@@ -47,8 +26,10 @@
 
 <script type="text/ecmascript-6">
 export default {
-  components: {
-
+  props: {
+    phone: {
+      type: String
+    },
   },
   data() {
     return {
@@ -60,10 +41,29 @@ export default {
         { withdrawalQuota: '150.00', withdrawaTime: '2020-05-12 14:52:34', withdrawaType: '微信' }
       ],
       listLoading: false,
-      currentPage: 1
+      currentPage: 1,
+      param:{
+        "dateTime": "",
+        "pageNum": 1,
+        "pageSize": 10,
+        "phone": ""
+      },
     }
   },
   methods: {
+    getList(){
+      this.$ajax({
+        url:'/pay/getWithdrawList',
+        method: 'post',
+        data: this.param
+      }).then(res => {
+        this.listLoading = false
+        if(res.code == 200){
+          this.list = res.data.friendList
+          this.tableFoot.total = res.data.sumPage
+        }
+      })
+    },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`)
     },

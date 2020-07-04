@@ -33,7 +33,21 @@ export default {
   },
   methods: {
     confirm() {
-      console.log('confirm')
+      // let params = {
+      //   "contentImgUrl": param.contentImg,
+      //   "param": type,
+      //   "topImgUrl": param.titleImg
+      // }
+      this.$ajax({
+        url: '/api/config/setShareDefault',
+        method: 'post',
+        data: {"param": this.imageUrl}
+      }).then(res=>{
+        if(res.code == 200){
+          this.$message.success('添加成功')
+          this.imageUrl = ''
+        }
+      })
     },
     imgUploadSuccess(file) {
       const fd = new FormData()
@@ -55,7 +69,7 @@ export default {
     },
     //  图片上传请求
     successRequest(fd, imgType) {
-      this.$post('/image/upload', fd).then(res => {
+      this.$imgUpload('/image/upload', fd).then(res => {
         this.imgLoading = false
         this[imgType] = res.data
       })
@@ -70,7 +84,7 @@ export default {
       align-items: center;
       justify-content: center;
       width: 98px;
-      height: 98px;
+      height: 196px;
       border: 1px dashed #d9d9d9;
       border-radius: 6px;
       cursor: pointer;
@@ -102,7 +116,7 @@ export default {
   }
   .avatar {
     width: 98px;
-    height: 98px;
+    height: 100%;
     display: block;
   }
 </style>

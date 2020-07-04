@@ -606,10 +606,7 @@ export default {
          this.form = Object.assign({},this.form,this.luckForm)
       }
       this.form.type = this.adObj.value;
-      this.$parent.getPrice(this.form.type,1).then(res => {
-         this.configs = res.data
-      })
-      
+      this.getPrice(this.form.type,1)
    },
    methods: {
       initForm(){
@@ -720,6 +717,18 @@ export default {
             this.form.address = citysData.parent.data.label + '/' + citysData.data.label
             this.form.cityCode = citysData.parent.data.value
          }
+      },
+      getPrice(homeAdType,rangType){  
+         this.$ajax({
+            url: '/api/releasePrice',
+            method: 'post',
+            data: {homeAdType,rangType}
+         }).then(res=>{
+            if(res.code == 200){
+               this.configs = res.data
+            }
+         })
+         // return this.$post('/api/releasePrice',{homeAdType,rangType})
       },
       dateChange(val){
          console.log(val)

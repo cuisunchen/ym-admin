@@ -123,7 +123,7 @@
           <span v-if="scope.row.status == 7">待支付</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="220px" >
+      <el-table-column align="center" label="操作" width="220px" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="showDialog(scope.row)">详情</el-button>
           <el-button type="success" size="mini" v-if="form.status != 1" @click="orderPass(scope.row)">通过</el-button>

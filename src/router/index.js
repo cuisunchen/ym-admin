@@ -188,19 +188,19 @@ export const constantRoutes = [
       {
         path: 'platfrom',
         component: () => import('@/myPages/accountManage/platfrom'),
-        name: 'accountManage',
+        name: 'accountPlatfrom',
         meta: { title: '平台账单', icon: 'documentation' }
       },
       {
         path: 'business',
         component: () => import('@/myPages/accountManage/business'),
-        name: 'accountManage',
+        name: 'accountBusiness',
         meta: { title: '广告商账单', icon: 'documentation' }
       },
       {
         path: 'ordinary',
         component: () => import('@/myPages/accountManage/ordinary'),
-        name: 'accountManage',
+        name: 'accountOrdinary',
         meta: { title: '普通用户账单', icon: 'documentation' }
       }
     ]
@@ -327,7 +327,7 @@ export const constantRoutes = [
           {
             path: 'orderTaking',
             component: () => import('@/myPages/configManage/ordinary/orderTaking'),
-            name: 'hobby',
+            name: 'orderTaking',
             meta: { title: '默认广告' }
           },
           {

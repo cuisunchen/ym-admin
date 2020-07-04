@@ -29,6 +29,13 @@ export default {
   props: {
     userId: {
       type: String
+    },
+  },
+  watch: {
+    userId(val){
+      this.listLoading = true
+      this.param.userId = val
+      this.getFriends()
     }
   },
   data() {
@@ -49,6 +56,7 @@ export default {
   },
   created () {
     this.listLoading = true
+    this.param.userId = this.userId
     this.getFriends()
   },
   methods: {

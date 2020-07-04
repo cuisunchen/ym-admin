@@ -98,8 +98,16 @@ export default {
       })
    },
    methods: {
-      getIssueDates(homeType){
-         return this.$post('/api/releaseFreeTime',{homeType})
+      getIssueDates(param){
+         this.$ajax({
+            url: '/api/releaseFreeTime',
+            method: 'post',
+            data: param
+         }).then(res=>{
+            if(res.code == 200){
+               return res.data
+            }
+         })
       },
       preview(data){
          let previewParam = {
@@ -112,9 +120,7 @@ export default {
          frame.contentWindow.postMessage(data,'http://localhost:8081/#/');
       },
       //  供子组件调用  方法
-      getPrice(homeAdType,rangType){  
-         return this.$post('/api/releasePrice',{homeAdType,rangType})
-      },
+      
       rangeTypeShow(val){
          if(val){
             this.hidden = false
@@ -154,9 +160,10 @@ export default {
 
 <style lang="scss" scoped>
 .issuePage{
-   width: 1200px;
+   // width: 1200px;
    min-height:calc(100% - 170px);
-   margin: 20px auto;
+   padding: 30px 20px;
+   // margin: 20px ;
    .content{
       padding-right: 80px;
    }

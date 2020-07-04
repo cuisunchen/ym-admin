@@ -64,16 +64,6 @@
          </el-select>
       </el-form-item>
 
-      <!-- <el-form-item>
-         <div class="xy flex align-center" @click="signXY">
-            <div class="checkbox flex all-center" :class="{'checked': checked}">
-               <div class="dot"></div>
-            </div>
-            <div class="content">
-               阿萨德化工是大法官
-            </div>
-         </div>
-      </el-form-item> -->
       <el-form-item>
          <el-button type="primary" @click="onSubmit('ruleForm')" :loading="submitLoading">确认提交</el-button>
          <el-button type="success" @click="preview">预览效果</el-button>
@@ -141,11 +131,6 @@ export default {
                { validator: checkHomeBigImgUrl }
             ]
          },
-         // pickerOptions: {
-         //    disabledDate(time) {
-         //       return time.getTime() <= Date.now();
-         //    }
-         // },
          dataOptions:[],
          recommendImgLoading: false,
          contentImgLoading: false,
@@ -159,27 +144,16 @@ export default {
          this.initForm()
       },
       adType(val){
-         
          this.initForm()
          this.form.homeType = JSON.parse(this.$getStorage('adObj')).value
-         console.log(this.form.homeType)
-         this.$parent.getPrice(this.form.homeType,1).then(res => {
-            this.configs = res.data
-         })
-         this.$parent.getIssueDates(this.form.homeType).then(res=>{
-         this.dataOptions = res.data
-      })
+         
+         this.getIssueDates()
       }
    },
    created () {
       let adObj = JSON.parse(this.$getStorage('adObj'))
       this.form.homeType = adObj.value
-      this.$parent.getPrice(this.form.homeType,1).then(res => {   // 轮播/封面和弹窗都是全国类型,所以rangType写死成1
-         this.configs = res.data
-      })
-      this.$parent.getIssueDates(this.form.homeType).then(res=>{
-         this.dataOptions = res.data
-      })
+      this.getIssueDates()
    },
    methods: {
       initForm(){
@@ -193,6 +167,21 @@ export default {
          let adObj = JSON.parse(this.$getStorage('adObj'))
          this.form.homeType = adObj.value
          this.$refs.ruleForm.resetFields();
+      },
+      getIssueDates(){
+         let param = {
+            "cityCode": "440306",
+            "homeType": this.form.homeType
+         }
+         this.$ajax({
+            url: '/api/releaseFreeTime',
+            method: 'post',
+            data: param
+         }).then(res=>{
+            if(res.code == 200){
+               this.dataOptions = res.data
+            }
+         })
       },
       preview(){
          this.$refs.ruleForm.validate(valid => {
@@ -235,10 +224,6 @@ export default {
             this.recommendImgLoading = false
          })
       },
-      recommendTypeChange(value){
-         console.log(value);
-         console.log(this.recommendType);
-      },
       signXY(){
          this.checked = !this.checked
       },
@@ -278,14 +263,15 @@ export default {
             homeType,
             releaseTimes
          }
-         this.$post('/api/release',params).then(res=>{
-            this.submitLoading = false
-            if( res.code == 200 ){
+         this.$ajax({
+            url: '/api/release',
+            method: 'post',
+            data: params
+         }).then(res=>{
+            if(res.code == 200){
                this.$message.success('发布成功')
                this.initForm()
-               this.$parent.getIssueDates(this.form.homeType).then(res=>{
-                  this.dataOptions = res.data
-               })
+               this.getIssueDates()
             }
          })
       }
