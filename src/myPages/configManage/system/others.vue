@@ -1,7 +1,7 @@
 <template>
   <div class="othersPage">
     <el-collapse v-model="activeNames">
-      <el-collapse-item title="app版本配置" name="1">
+      <el-collapse-item title="ios版本配置" name="1">
         <el-form style="width:500px" label-width="90px" label-position="left">
           <el-form-item label="当前版本">
             <p>{{appVersion.version}}</p>
@@ -9,7 +9,7 @@
           <el-form-item label="最新版本号">
             <el-input v-model.trim="appObj.version" placeholder="请输入版本" />
             <el-switch
-              v-model="appVersion.forceUpdate"
+              v-model="appObj.isForceUpdate"
               active-text="是否强制更新"
             />
           </el-form-item>
@@ -36,25 +36,29 @@
         </el-form>
       </el-collapse-item>
 
-      <el-collapse-item title="android是否正在审核" name="3">
+      <el-collapse-item title="android版本配置" name="3">
         <el-form style="width:500px" label-width="90px" label-position="left">
           <el-form-item label="当前版本">
             <p>{{androidVersion.version}}</p>
           </el-form-item>
-          <el-form-item label="审核版本">
+          <el-form-item label="最新版本号">
             <el-input v-model.trim="androidObj.version" placeholder="请输入版本" />
-            <el-switch
-              v-model="androidObj.forceUpdate"
-              active-text="是否提交审核"
-            />
+            
           </el-form-item>
+          <el-form-item label="配置下载地址">
+            <el-input v-model.trim="androidObj.downloadLink" placeholder="请输入版本" />
+            <el-switch
+              v-model="androidObj.isForceUpdate"
+              active-text="是否强制更新"/>
+          </el-form-item>
+          
           <el-form-item>
             <el-button type="primary" @click="checkVersion('androidObj')">提交</el-button>
           </el-form-item>
         </el-form>
       </el-collapse-item>
 
-      <el-collapse-item title="微信小程序是否正在审核" name="4">
+      <el-collapse-item title="微信小程序是否正在审核" name="5">
         <el-form style="width:500px" label-width="90px" label-position="left">
           <el-form-item label="当前版本">
             <p>{{weChatVersion.version}}</p>
@@ -85,22 +89,23 @@ export default {
       edition: '', //  app版本
       isUpdate: false,
 
-      appObj:{
+      appObj:{  //  这是app强制更新
         "clientName": 'app',
         "isForceUpdate": false,
         "version": ""
       },
-      iosObj:{
+      iosObj:{   //  这是ios是否在审核
         "clientName": 'iosAudit',
         "isForceUpdate": false,
         "version": ""
       },
-      androidObj:{
+      androidObj:{   //  这是ios是否在审核
         "clientName": 'android',
         "isForceUpdate": false,
-        "version": ""
+        "version": "",
+        "downloadLink":''
       },
-      weChatObj:{
+      weChatObj:{   //  微信是否在审核
         "clientName": 'weChat',
         "isForceUpdate": false,
         "version": ""
@@ -140,6 +145,7 @@ export default {
               case 'android':
                 this.androidVersion = item
                 this.androidObj.isForceUpdate = item.forceUpdate
+                this.androidObj.downloadLink = item.downloadLink
                 break;
             }
           }
@@ -147,6 +153,9 @@ export default {
       })
     },
     checkVersion(type){
+      // if( type == 'androidObj'){  
+      //   this[type].downloadLink = 'http://www.guangyi009.com/apk/app-release.apk'
+      // }
       request({
         url: '/api/config/setVersion',
         method: 'post',

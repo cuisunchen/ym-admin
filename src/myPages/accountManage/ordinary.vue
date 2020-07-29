@@ -50,9 +50,14 @@
         <template slot-scope="scope">{{scope.row.status}}</template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="180px" fixed="right">
-        <template slot-scope="scope" v-if="scope.row.status == '未审核'">
-          <el-button type="primary" @click="checkOrder(scope.row,2)">驳回</el-button>
-          <el-button type="success" @click="checkOrder(scope.row,1)">通过</el-button>
+        <template slot-scope="scope">
+          <div class="wrap" v-if="scope.row.status == '未审核'">
+            <el-button type="primary" :loading="noPassLoadding" @click="checkOrder(scope.row,2)">驳回</el-button>
+            <el-button type="success" :loading="successLoadding" @click="checkOrder(scope.row,1)">通过</el-button>
+          </div>
+          <div class="wrap" v-if="scope.row.status == '驳回'">
+            <el-button type="primary" :loading="successLoadding" @click="checkOrder(scope.row,1)">重新通过</el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -101,6 +106,8 @@ export default {
       },
       reason:'',
       totalNums:null,
+      successLoadding: false,
+      noPassLoadding: false,
     }
   },
   created () {
@@ -154,7 +161,7 @@ export default {
           cancelButtonText: '取消',
           beforeClose: (action, instance, done) => {
             if (action === 'confirm') {
-              instance.confirmButtonLoading = true
+              this.successLoadding = true
               this.editWithdrawStatus(param)
               done()
             } else {
@@ -163,6 +170,7 @@ export default {
           }
         })
       }else if(status == 2){
+        this.noPassLoadding = true
         const h = this.$createElement
         this.$msgbox({
           title: '请输入驳回原因',
@@ -182,7 +190,7 @@ export default {
             if (action === 'confirm') {
               instance.confirmButtonLoading = true
               param.reason = this.reason
-              this.editWithdrawStatus(param)
+              this.editWithdrawStatus(param,instance)
             } else {
               done()
             }
@@ -192,12 +200,15 @@ export default {
         })
       }
     },
-    editWithdrawStatus(param){
+    editWithdrawStatus(param,instance){
       this.$ajax({
         url: '/pay/editWithdrawStatus',
         method: 'post',
         data: param
       }).then(res=>{
+        instance.confirmButtonLoading = false
+        this.successLoadding = false
+        this.noPassLoadding = false
         if(res.code == 200){
           this.$message.success('操作成功')
           this.getLists()
@@ -244,5 +255,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 </style>

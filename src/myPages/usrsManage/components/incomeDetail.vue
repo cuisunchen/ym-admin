@@ -1,43 +1,15 @@
 <template>
   <div class="incomeDetail">
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-    >
-      <el-table-column
-        align="center"
-        type="index"
-        width="30"
-      />
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" >
+      <el-table-column align="center" type="index" width="30" />
 
-      <el-table-column
-        align="center"
-        prop="questionIncome"
-        label="问答收益"
-      />
+      <el-table-column align="center" prop="date" label="日期" />
 
-      <el-table-column
-        align="center"
-        prop="luckDraw"
-        label="好运收益"
-      />
+      <el-table-column align="center" prop="profit" label="收益" />
 
-      <el-table-column
-        align="center"
-        prop="friendDivide"
-        label="其他收益"
-      />
+      <!-- <el-table-column align="center" prop="friendDivide" label="其他收益"/>
 
-      <el-table-column
-        align="center"
-        prop="friendDivide"
-        label="好友分成"
-      />
-
+      <el-table-column align="center"  prop="friendDivide" label="好友分成" /> -->
     </el-table>
     <el-pagination
       background
@@ -57,11 +29,10 @@ export default {
   data() {
     return {
       list: [
-        { questionIncome: '22.00', luckDraw: '10.00', friendDivide: '10.00' },
-        { questionIncome: '23.00', luckDraw: '20.00', friendDivide: '11.00' },
-        { questionIncome: '24.00', luckDraw: '30.00', friendDivide: '12.00' },
-        { questionIncome: '25.00', luckDraw: '40.00', friendDivide: '13.00' },
-        { questionIncome: '26.00', luckDraw: '50.00', friendDivide: '14.00' }
+        { date: '2020-07-10', profit: '10.00'},
+        { date: '2020-07-09', profit: '11.00'},
+        { date: '2020-07-08', profit: '12.00'},
+        { date: '2020-07-07', profit: '13.00'},
       ],
       listLoading: false,
       currentPage: 1

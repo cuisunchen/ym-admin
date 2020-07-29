@@ -37,13 +37,13 @@
         </template>
       </el-table-column>
       <!-- 点击显示弹窗   显示各种收益明细 问答收益多少  好运收益多少  好友分成多少 -->
-      <el-table-column align="center" label="今日收益" width="110">
+      <el-table-column align="center" prop="todayEarn" label="今日收益" width="110"></el-table-column>
+
+      <el-table-column align="center" label="全部收益" width="110">
         <template slot-scope="scope">
-          <div style="cursor: pointer" @click="showDialog('income','今日收益',scope.row)">{{ scope.row.todayEarn }}</div>
+          <div style="cursor: pointer" @click="showDialog('income','全部收益',scope.row)">{{ scope.row.totalEarn }}</div>
         </template>
       </el-table-column>
-
-      <el-table-column align="center" prop="totalEarn" label="全部收益" width="110"/>
 
       <el-table-column align="center" prop="surplus" label="剩余金额" width="110" >
       </el-table-column>
@@ -65,7 +65,7 @@
 
       <el-table-column align="center" width="80" label="账号状态">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.status" active-color="#ff4949" @change="switchChange(scope.row)"/>
+          <el-switch v-model="scope.row.status" active-color="#ff4949" @change="switchChange(scope.row,scope.$index)"/>
         </template>
       </el-table-column>
 
@@ -79,7 +79,7 @@
     <el-pagination
       background
       :current-page="tableFoot.currentPage"
-      :page-sizes="[2, 20, 30, 40]"
+      :page-sizes="[10, 20, 30, 40]"
       :page-size="param.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="tableFoot.total"
@@ -115,7 +115,7 @@
         </el-col>
       </el-row>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="reasonShow = false">取 消</el-button>
+        <el-button @click="closeDialog">取 消</el-button>
         <el-button type="primary" @click="blockAccount">确 定</el-button>
       </span>
     </el-dialog>
@@ -157,7 +157,8 @@ export default {
         "pageSize": 10,
         "phone": '',
         'status': null
-      }
+      },
+      tableRowIndex:null
     }
   },
   created () {
@@ -188,33 +189,45 @@ export default {
         }
       })
     },
-    handleClose(){},
+    handleClose(){
+
+    },
+    closeDialog(){
+      this.reasonShow = false
+    },
     dropItemClick(data){
       this.blockReason = data
     },
     showDialog(type, title, row) {
       this.type = type
-      if (type == 'detail') {
-        // this.currentData = row
-        
-      }
       this.currentData = row
       this.dialogTitle = title
       this.dialogFormVisible = true
     },
-    switchChange(row){
+    switchChange(row,index){
+      this.currentData = row
+      this.tableRowIndex = index
       this.blockAccountId = row.id
       if(row.status){
         this.reasonShow = true
-      }else{
-        this.blockAccount()
+      }
+      else{
+        this.$confirm('确定要解封吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.blockAccount()
+        }).catch(() => {
+          row.status = !row.status 
+        });
       }
     },
     blockAccount(){
       this.$ajax({
           url:'/api/user/updateUserStatus',
           method: 'post',
-          data: {id: this.blockAccountId}
+          data: {id: this.blockAccountId,reason:this.blockReason}
         }).then(res=>{
           if(res.code == 200){
             this.$message({
@@ -222,6 +235,8 @@ export default {
               message: '修改成功!'
             });
             this.getLists()
+            this.blockReason = ''
+            this.reasonShow = false
           }
         })
     },

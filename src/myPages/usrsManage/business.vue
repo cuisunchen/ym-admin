@@ -25,7 +25,7 @@
       <!-- 点击跳转到账户管理的充值明细页面 -->
       <el-table-column align="center" label="充值总金额" width="100">
         <template slot-scope="scope">
-          <router-link class="link" :to="{path:'/accountManage/business',query:{id: scope.row.id}}">
+          <router-link class="link" :to="{path:'/accountManage/business',query:{phone: scope.row.mobile}}">
             {{ scope.row.recharge }}
           </router-link>
         </template>
@@ -58,7 +58,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="首次登录时间" width="110">
+      <el-table-column align="center" label="首次登录时间">
         <template slot-scope="scope">
           {{ scope.row.time || '--' }}
         </template>

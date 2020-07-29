@@ -214,13 +214,13 @@ export const constantRoutes = [
       {
         path: 'business',
         component: () => import('@/myPages/messageManage/business'),
-        name: 'messageManage',
+        name: 'messageBusiness',
         meta: { title: '广告商消息', icon: 'documentation' }
       },
       {
         path: 'ordinary',
         component: () => import('@/myPages/messageManage/ordinary'),
-        name: 'messageManage',
+        name: 'messageOrdinary',
         meta: { title: '普通用户消息', icon: 'documentation' }
       }
     ]
@@ -234,19 +234,19 @@ export const constantRoutes = [
       {
         path: 'business',
         component: () => import('@/myPages/feedBackManage/business'),
-        name: 'feedBackManage',
+        name: 'feedBackBusiness',
         meta: { title: '广告商问题', icon: 'documentation' }
       },
       {
         path: 'ordinary',
         component: () => import('@/myPages/feedBackManage/ordinary'),
-        name: 'feedBackManage',
+        name: 'feedBackOrdinary',
         meta: { title: '普通用户问题', icon: 'documentation' }
       },
       {
         path: 'appeal',
         component: () => import('@/myPages/feedBackManage/appeal'),
-        name: 'feedBackManage',
+        name: 'feedBackAppeal',
         meta: { title: '申诉问题', icon: 'documentation' }
       }
     ]
@@ -292,6 +292,12 @@ export const constantRoutes = [
             component: () => import('@/myPages/configManage/system/loginConfig'),
             name: 'loginConf',
             meta: { title: '登录方式配置' }
+          },
+          {
+            path: 'yiyuan',
+            component: () => import('@/myPages/configManage/system/yiyuan'),
+            name: 'yiyuan',
+            meta: { title: '新手1元提现配置' }
           }
         ]
       },

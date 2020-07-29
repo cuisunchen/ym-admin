@@ -98,17 +98,7 @@ export default {
       })
    },
    methods: {
-      getIssueDates(param){
-         this.$ajax({
-            url: '/api/releaseFreeTime',
-            method: 'post',
-            data: param
-         }).then(res=>{
-            if(res.code == 200){
-               return res.data
-            }
-         })
-      },
+      
       preview(data){
          let previewParam = {
             previewType: 0,   //  0: 封面  1:首页  2: 好运

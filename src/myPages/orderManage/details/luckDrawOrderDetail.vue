@@ -100,9 +100,9 @@
     <div class="flex">
       <TextLayout :label-width="84" class="flex1" label="状态">
         <span v-if="dataObj.status == 0">待审核</span>
-        <span v-if="dataObj.status == 1">待发布</span>
+        <span v-if="dataObj.status == 1">发布中</span>
         <span v-if="dataObj.status == 2">已驳回</span>
-        <span v-if="dataObj.status == 4">发布中</span>
+        <span v-if="dataObj.status == 4">已下架</span>
       </TextLayout>
       <TextLayout :label-width="70" class="flex1" label="好运图">
         <viewer>

@@ -25,7 +25,7 @@ export default {
     ])
   },
   created() {
-    if (!(this.roles.includes('admin') || this.roles.includes('root'))) {
+    if (!(this.roles.includes('admin') || this.roles.includes('root') || this.roles.includes('lem'))) {
       this.currentRole = 'editorDashboard'
     }
   }

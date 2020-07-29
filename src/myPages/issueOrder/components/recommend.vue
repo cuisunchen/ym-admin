@@ -214,9 +214,7 @@ export default {
          this.initForm()
          this.adObj = JSON.parse(this.$getStorage('adObj'))
          this.form.recommendType = this.adObj.value
-         this.$parent.getIssueDates(this.form.recommendType).then(res=>{
-            this.dataOptions = res.data
-         })
+         // this.getIssueDates(this.form.recommendType)
          if(this.adObj.value == 4 || this.adObj.value == 5){
             this.rangType = 1
          }else if(this.adObj.value == 6){
@@ -224,9 +222,7 @@ export default {
          }else{
             this.rangType = 3
          }
-         this.$parent.getPrice(this.form.recommendType,this.rangType).then(res => {
-            this.configs = res.data
-         })
+         this.getPrice(this.form.recommendType,this.rangType)
       }
    },
    created () {
@@ -240,12 +236,8 @@ export default {
       }else{
          this.rangType = 3
       }
-      this.$parent.getPrice(this.form.recommendType,this.rangType).then(res => {
-         this.configs = res.data
-      })
-      this.$parent.getIssueDates(this.form.recommendType).then(res=>{
-         this.dataOptions = res.data
-      })
+      this.getPrice(this.form.recommendType,this.rangType)
+      this.getIssueDates(this.form.recommendType)
    },
    methods: {
       initForm(){
@@ -282,11 +274,18 @@ export default {
          }
       },
       cityChange(val){
+         
          let citysData = this.$refs['cascader'].getCheckedNodes()[0]
          if(citysData){
             this.form.address = citysData.parent.data.label + '/' + citysData.data.label
-            this.form.cityCode = citysData.parent.data.value
+            if(this.form.homeType == 6){
+               this.form.cityCode = citysData.data.value.slice(0,4)
+            }else{
+               this.form.cityCode = citysData.data.value
+            }
+            console.log(this.form.cityCode)
          }
+         this.getIssueDates(this.form.recommendType)
       },
       dateChange(val){
          this.form.releaseTimes = val
@@ -316,11 +315,17 @@ export default {
       },
       //  图片上传请求
       successRequest(fd,imgType){
-         this.$post('/image/upload',fd).then( res => {
-            this.contentImgLoading = false
-            this.recommendImgLoading = false
-            this.form[imgType] = res.data
-         }) 
+         this.$ajax({
+            url:'/image/upload',
+            method: 'post',
+            data: fd
+         }).then(res=>{
+            if(res.code == 200){
+               this.contentImgLoading = false
+               this.recommendImgLoading = false
+               this.form[imgType] = res.data
+            }
+         })
       },
       //  内容图片上传前效验
       beforeContentImgUpload(file) {
@@ -350,7 +355,7 @@ export default {
          let {recommendType,title,brand,imageUrl,url,releaseTimes,address,cityCode} = this.form
          releaseTimes = releaseTimes.map(item => item+" 00:00:00")
          if(recommendType == 6){
-            cityCode=cityCode.slice(0,3)
+            cityCode=cityCode.slice(0,4)
          }
          let param = {
             "address": recommendType == 4 || recommendType == 5 ? '全国' : address,
@@ -362,11 +367,40 @@ export default {
             "releaseTimes": releaseTimes,
             "title": title
          }
-         this.$post('/api/recommend',param)
-         .then(res => {
+         this.$ajax({
+            url: '/api/recommend',
+            method: 'post',
+            data: param
+         }).then(res=>{
             if(res.code == 200){
                this.$message.success('发布成功')
                this.initForm()
+            }
+         })
+      },
+      getPrice(homeAdType,rangType){  
+         this.$ajax({
+            url: '/api/releasePrice',
+            method: 'post',
+            data: {homeAdType,rangType}
+         }).then(res=>{
+            if(res.code == 200){
+               this.configs = res.data
+            }
+         })
+      },
+      getIssueDates(param){
+         let params = {
+            "cityCode": this.form.recommendType == 4 || this.form.recommendType == 5 ? 0 : this.form.cityCode,
+            "homeType": param
+         }
+         this.$ajax({
+            url: '/api/releaseFreeTime',
+            method: 'post',
+            data: params
+         }).then(res=>{
+            if(res.code == 200){
+               this.dataOptions = res.data
             }
          })
       },

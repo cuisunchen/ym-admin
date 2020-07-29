@@ -138,8 +138,8 @@
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="showDialog(scope.row)">详情</el-button>
           <el-button type="success" size="mini" v-if="form.status != 1" @click="orderPass(scope.row)">通过</el-button>
-          <el-button type="warning" size="mini" v-if="form.status != 2" @click="noPass(scope.row)">驳回</el-button>
-          <el-button type="danger" size="mini" v-if="form.status != 5" @click="orderDown(scope.row)">下架</el-button>
+          <el-button type="warning" size="mini" v-else-if="form.status == 1" @click="noPass(scope.row)">驳回</el-button>
+          <el-button type="danger" size="mini" v-else-if="form.status != 5 && form.status != 2 && form.status != 4" @click="orderDown(scope.row)">下架</el-button>
         </template>
       </el-table-column>
     </el-table>

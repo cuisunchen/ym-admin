@@ -2,10 +2,10 @@
   <div class="app-container businessQuestion-container">
     <el-form :inline="true" class="demo-form-inline">
       <el-form-item label="手机号">
-        <el-input v-model="mobile" placeholder="手机号" />
+        <el-input v-model="form.mobile" placeholder="手机号" />
       </el-form-item>
       <el-form-item label="回复状态">
-        <el-select v-model="value" placeholder="请选择">
+        <el-select v-model="form.status" placeholder="请选择">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -15,63 +15,31 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="search">查询</el-button>
+        <el-button type="primary" @click="getMerchantFeedback">查询</el-button>
       </el-form-item>
     </el-form>
 
-    <el-table
-      v-loading="listLoading"
-      :data="tableData"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-    >
-      <el-table-column
-        align="center"
-        type="index"
-        width="30"
-      />
+    <el-table v-loading="listLoading" :data="tableData" border fit 
+          highlight-current-row style="width: 100%">
+      <el-table-column align="center" type="index" width="30"/>
 
-      <el-table-column
-        align="center"
-        prop="mobile"
-        label="手机号"
-      />
+      <el-table-column align="center" prop="phoneNum" label="手机号"/>
 
-      <el-table-column
-        align="center"
-        prop="id"
-        label="反馈编号"
-      />
+      <el-table-column align="center" prop="feedbackID" label="反馈编号" />
 
-      <el-table-column
-        align="center"
-        prop="profit"
-        label="标题"
-      />
+      <el-table-column align="center" prop="title" label="标题" />
 
-      <el-table-column
-        align="center"
-        prop="orderTotal"
-        label="发送时间"
-      />
+      <el-table-column align="center" prop="sendTime" label="发送时间" />
 
-      <el-table-column
-        align="center"
-        prop="time"
-        label="回复时间"
-      />
-      <el-table-column
-        align="center"
-        prop="time"
-        label="状态"
-      />
+      <el-table-column align="center" prop="replyTime" label="回复时间"/>
 
-      <el-table-column
-        align="center"
-        label="回复"
-      >
+      <el-table-column align="center" prop="status" label="状态">
+        <template slot-scope="scope">
+          <span :style="{color: scope.row.status == '未回复' ? '#1890ff' : '#606266'}">{{scope.row.status}}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="回复">
         <template slot-scope="scope">
           <el-button type="primary" plain @click="showDialog(scope.row)">回复</el-button>
         </template>
@@ -79,21 +47,28 @@
 
     </el-table>
 
-    <el-pagination
-      background
-      :current-page="currentPage"
-      :page-sizes="[100, 200, 300, 400]"
-      :page-size="20"
+    <el-pagination background
+      :current-page="form.pageNum"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="form.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400"
+      :total="totalNums"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
 
-    <el-dialog title="回复" :visible.sync="dialogFormVisible">
-      <p class="title">埃及十多个接口是否该</p>
-      <el-input type="textarea" />
-      <el-button type="primary">提交</el-button>
+    <el-dialog class="replyList" title="回复" :visible.sync="dialogFormVisible">
+      <p class="title">{{detailData.title}}</p>
+
+      <div class="item" :class="{'userBack': item.role == 'user'}" v-for="(item,index) in replyList" :key="index">
+        <p class="tit">{{item.replyAccount}} 回复:</p>
+        <p class="userCon">{{item.content}}</p>
+      </div>
+
+      <div class="inputBox flex">
+        <el-input type="text" v-model="replyCon"></el-input>
+        <el-button type="primary" class="submit" @click="replyFeedback">提交</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -102,10 +77,7 @@
 export default {
   data() {
     return {
-      admin: '',
-      mobile: '',
       listLoading: false,
-      value: '',
       options: [
         {
           value: '选项1',
@@ -118,70 +90,113 @@ export default {
           label: '未回复'
         }
       ],
-      tableData: [{
-        id: 'a1',
-        sex: '男',
-        orderTotal: '1',
-        mobile: '13728760372',
-        level: '1',
-        profit: '100.04',
-        time: '2019-3-21',
-        status: false
-      }, {
-        id: 'a1',
-        sex: '男',
-        orderTotal: '1',
-        mobile: '13728760372',
-        level: '1',
-        profit: '100.04',
-        time: '2019-3-21',
-        status: false
-      }, {
-        id: 'a1',
-        sex: '男',
-        orderTotal: '1',
-        mobile: '13728760372',
-        level: '1',
-        profit: '100.04',
-        time: '2019-3-21',
-        status: false
-      }, {
-        id: 'a1',
-        sex: '男',
-        orderTotal: '1',
-        mobile: '13728760372',
-        level: '1',
-        profit: '100.04',
-        time: '2019-3-21',
-        status: true
-      }],
-      currentPage: 1,
-      detailData: null,
-      dialogFormVisible: false
+      tableData: [],
+      detailData: {},
+      dialogFormVisible: false,
+      form:{
+        "pageNum": 1,
+        "pageSize": 10,
+        "phone": "",
+        "status": ""
+      },
+      totalNums: null,
+      replyList:[],
+      replyCon:""
     }
   },
+  created () {
+    this.getMerchantFeedback()
+  },
   methods: {
-    search() {
-      console.log('search')
+    getMerchantFeedback(){
+      this.listLoading = true
+      this.$ajax({
+        url: '/feedback/getMerchantFeedback',
+        method: 'post',
+        data: this.form
+      }).then(res=>{
+        if(res.code == 200){
+          this.tableData = res.data.userList
+          this.totalNums = res.data.totalNums
+          this.listLoading = false
+        }
+      })
+    },
+    replyFeedback(){
+      this.$ajax({
+        url: '/feedback/addFeedback',
+        method: 'post',
+        data: {
+          "content": this.replyCon,
+          "fatherId": this.detailData.feedbackID
+        }
+      }).then(res=>{
+        if(res.code == 200 && res.msg == 'SUCCESS'){
+          this.$message('回复成功')
+          this.replyCon = ''
+          this.getFeedbackInfo()
+        }
+      })
     },
     showDialog(data) {
-      console.log(data)
       this.detailData = data
       this.dialogFormVisible = true
+      this.getFeedbackInfo()
     },
-    handleClick() {
-      console.log('button click')
+    getFeedbackInfo(){
+      this.$ajax({
+        url: '/feedback/getFeedbackInfo',
+        method: 'post',
+        data: {id:this.detailData.feedbackID}
+      }).then(res=>{
+        if(res.code == 200){
+          this.replyList = res.data
+        }
+      })
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      this.form.pageSize = val
+      this.getMerchantFeedback()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      this.form.pageNum = val
+      this.getMerchantFeedback()
     }
   }
 }
 </script>
 
 <style scoped lang="scss" scoped>
+.businessQuestion-container{
+  .el-dialog{
+    position: relative;
+    .title{
+      margin-bottom: 14px;
+    }
+    .item{
+      text-align: right;
+      margin-bottom: 14px;
+      .tit{
+        color: burlywood;
+      }
+    }
+    .userBack{
+      text-align: left;
+      .tit{
+        color: aquamarine;
+      }
+    }
+    .inputBox{
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      .submit{
+        margin-left: 14px;
+      }
+    }
+  }
+}
 
 </style>

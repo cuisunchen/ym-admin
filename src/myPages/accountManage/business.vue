@@ -32,6 +32,7 @@
 
       <!-- 点击跳转到账户管理的充值明细页面 -->
       <el-table-column align="center" prop="rechargeAmount" label="充值金额" width="120"/>
+      <el-table-column align="center" prop="rechargeStatus" label="充值状态" width="120"/>
       <el-table-column align="center" prop="time" label="充值时间" width="160"/>
     </el-table>
 
@@ -68,8 +69,8 @@ export default {
       this.form.dateTime = this.$route.params.time + ' 00:00:00'
     }
     
-    if(this.$route.query.id){
-      this.form.orderNum = this.$route.query.id
+    if(this.$route.query.phone){
+      this.form.mobile = this.$route.query.phone
     }
     
     this.getLists()

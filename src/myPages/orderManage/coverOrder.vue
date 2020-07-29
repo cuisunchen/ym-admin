@@ -134,7 +134,7 @@
     <el-pagination
       background
       :current-page="form.pageNum"
-      :page-sizes="[100, 200, 300, 400]"
+      :page-sizes="[10, 20, 30, 40]"
       :page-size="form.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="totalNums"

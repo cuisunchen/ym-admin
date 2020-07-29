@@ -40,7 +40,8 @@ module.exports = {
     proxy: {
       '/api': {
         // target: 'http://9d16adb9f2f3.ngrok.io',
-        target: 'https://test.guangyi009.com/',
+        // target: 'https://test.guangyi009.com/',
+        target: 'http://42.194.210.167:8666',
         changeOrigin: true,//允许跨域
         ws: true,
         pathRewrite: {

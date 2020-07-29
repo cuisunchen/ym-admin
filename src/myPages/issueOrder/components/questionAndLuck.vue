@@ -108,7 +108,7 @@
                   v-model="form.dateVal"
                   type="datetime"
                   placeholder="选择发布时间"
-                  :picker-options="pickerOptions"
+                  
                   format="yyyy-MM-dd HH:mm:ss"
                   value-format="yyyy-MM-dd HH:mm:ss"
                   @change="dateChange" />
@@ -585,10 +585,6 @@ export default {
    },
    computed: {
       rate(){
-         console.log((0+
-               ((Number(this.form.maxNum) + Number(this.form.middleNum1)
-            +  Number(this.form.middleNum2) + Number(this.form.middleNum3)
-            +  Number(this.form.minNum))/(Number(this.form.totalNum) || 1)*100)).toFixed(2))
          if(!this.form.totalNum){
             return 0
          }
@@ -692,9 +688,7 @@ export default {
             this.form.address = ''
             this.form.location = [ ]
          }
-         this.$parent.getPrice(this.form.type,val).then(res => {
-            this.configs = res.data
-         })
+         this.getPrice(this.form.type,val)
       },
       handleItemChange(val){
          if(this.form.rangeType == 2){
@@ -713,9 +707,10 @@ export default {
       },
       cityChange(val){
          let citysData = this.$refs['cascader'].getCheckedNodes()[0]
+         
          if(citysData){
             this.form.address = citysData.parent.data.label + '/' + citysData.data.label
-            this.form.cityCode = citysData.parent.data.value
+            this.form.cityCode = citysData.data.value
          }
       },
       getPrice(homeAdType,rangType){  
@@ -775,7 +770,7 @@ export default {
             middleNum2,middleReward3,middleNum3,minReward,minNum
          } = this.form
          if(rangeType == 2){
-            cityCode=cityCode.slice(0,3)
+            cityCode=cityCode.slice(0,4)
          }
          let param = {
             address: address,
@@ -809,7 +804,11 @@ export default {
             })
             return
          }
-         this.$post('/api/goodLuck',param).then(res => {
+         this.$ajax({
+            url: '/api/goodLuck',
+            method: 'post',
+            data: param
+         }).then(res=>{
             if(res.code == 200){
                this.$message({
                   message: '发布成功!',
@@ -818,6 +817,15 @@ export default {
                this.initForm()
             }
          })
+         // this.$post('/api/goodLuck',param).then(res => {
+         //    if(res.code == 200){
+         //       this.$message({
+         //          message: '发布成功!',
+         //          type: 'success'
+         //       })
+         //       this.initForm()
+         //    }
+         // })
       },
       questionRequest(){
          let {
@@ -825,7 +833,7 @@ export default {
             rightAnswer,wrongAnswer,rangeType,dateVal,totalNum,type
          } = this.form
          if(rangeType == 2){
-            cityCode=cityCode.slice(0,3)
+            cityCode=cityCode.slice(0,4)
          }
          let param = {
             address: address,
@@ -841,9 +849,13 @@ export default {
             title:title.trim(),
             trueAnswer: rightAnswer
          }
-         this.$post('/api/questions',param).then(res => {
+         this.$ajax({
+            url: '/api/questions',
+            method: 'post',
+            data: param
+         }).then(res=>{
             if(res.code == 200){
-               this.$message({
+                this.$message({
                   message: '发布成功!',
                   type: 'success'
                })

@@ -164,6 +164,7 @@ export default {
             releaseEndTime: "",
             releaseTime: "",
          }
+         this.submitLoading = false
          let adObj = JSON.parse(this.$getStorage('adObj'))
          this.form.homeType = adObj.value
          this.$refs.ruleForm.resetFields();
